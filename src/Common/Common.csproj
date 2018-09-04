@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>IdentityAdmin.Common</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\ExceptionHandling\ControllerExceptionFilterAttribute.cs" Link="ExceptionHandling\ControllerExceptionFilterAttribute.cs" />
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\Helpers\DateTimeHelpers.cs" Link="Helpers\DateTimeHelpers.cs" />
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\Helpers\Identity\IdentityErrorMessages.cs" Link="Helpers\Identity\IdentityErrorMessages.cs" />
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\Helpers\NotificationHelpers.cs" Link="Helpers\NotificationHelpers.cs" />
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\Helpers\TagHelpers\PickerTagHelper.cs" Link="Helpers\TagHelpers\PickerTagHelper.cs" />
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\Helpers\TagHelpers\SwitchTagHelper.cs" Link="Helpers\TagHelpers\SwitchTagHelper.cs" />
+    <Compile Include="..\Skoruba.IdentityServer4.Admin\Helpers\UrlHelpers.cs" Link="Helpers\UrlHelpers.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ExceptionHandling\" />
+    <Folder Include="Helpers\Identity\" />
+    <Folder Include="Helpers\TagHelpers\" />
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Skoruba.IdentityServer4.Admin.BusinessLogic\Skoruba.IdentityServer4.Admin.BusinessLogic.csproj" />
+  </ItemGroup>
+
+</Project>
