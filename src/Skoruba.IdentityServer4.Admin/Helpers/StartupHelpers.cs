@@ -176,7 +176,8 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
 
             //Services
             services.AddTransient<ILogService, LogService>();
-            services.AddTransient<IClientService, ClientService>();
+            services.AddTransient<IClientService, ClientServiceV2>();
+            services.AddTransient<IClientServiceV2, ClientServiceV2>();
             services.AddTransient<IApiResourceService, ApiResourceService>();
             services.AddTransient<IIdentityResourceService, IdentityResourceService>();
             services.AddTransient<IPersistedGrantService, PersistedGrantService>();
@@ -259,17 +260,24 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
                         options => { options.Cookie.Name = AuthorizationConsts.IdentityAdminCookieName; })
                     .AddOpenIdConnect(AuthorizationConsts.OidcAuthenticationScheme, options =>
                     {
+                        options.ResponseType = "code id_token";
+
                         options.Authority = AuthorizationConsts.IdentityServerBaseUrl;
                         options.RequireHttpsMetadata = false;
 
                         options.ClientId = AuthorizationConsts.OidcClientId;
+                        options.ClientSecret = "gB8SnmG0c7EC6U6haoOl";
 
                         options.Scope.Clear();
-                        options.Scope.Add(AuthorizationConsts.ScopeOpenId);
-                        options.Scope.Add(AuthorizationConsts.ScopeProfile);
-                        options.Scope.Add(AuthorizationConsts.ScopeEmail);
-                        options.Scope.Add(AuthorizationConsts.ScopeRoles);
-
+                        //options.Scope.Add(AuthorizationConsts.ScopeOpenId);
+                        //options.Scope.Add(AuthorizationConsts.ScopeProfile);
+                        //options.Scope.Add(AuthorizationConsts.ScopeEmail);
+                        //options.Scope.Add(AuthorizationConsts.ScopeRoles);
+                        options.Scope.Add("openid");
+                        options.Scope.Add("all_claims");
+                        //options.Scope.Add("offline_access");
+                        options.Scope.Add("userid_claims");
+                        options.GetClaimsFromUserInfoEndpoint = true;
                         options.SaveTokens = true;
 
                         options.TokenValidationParameters = new TokenValidationParameters

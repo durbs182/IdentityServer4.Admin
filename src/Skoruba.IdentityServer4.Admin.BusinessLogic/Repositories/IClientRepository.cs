@@ -5,7 +5,7 @@ using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Common;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Repositories
 {
-	public interface IClientRepository
+    public interface IClientRepository
 	{
 		Task<int> AddClientAsync(Client client);
 

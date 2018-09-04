@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
-using Skoruba.IdentityServer4.Admin.Constants;
 using Skoruba.IdentityServer4.Admin.ExceptionHandling;
+using Skoruba.IdentityServer4.Admin.Helpers;
 
 namespace Skoruba.IdentityServer4.Admin.Controllers
 {
-    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+
+    [Authorize]
     [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
     public class HomeController : BaseController
     {
@@ -20,6 +22,12 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
         }
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult Ping()
         {
             return View();
         }
@@ -39,6 +47,8 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
 
             // Log the exception
             _logger.LogError(exceptionThatOccurred, $"Exception at route {routeWhereExceptionOccurred}");
+
+            CreateNotification(NotificationHelpers.AlertType.Error, exceptionThatOccurred.Message);
 
             return View();
         }

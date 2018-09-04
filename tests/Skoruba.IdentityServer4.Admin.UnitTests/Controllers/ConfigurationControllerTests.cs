@@ -746,7 +746,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
             // Arrange
             var identityResourceService = serviceProvider.GetRequiredService<IIdentityResourceService>();
             var apiResourceService = serviceProvider.GetRequiredService<IApiResourceService>();
-            var clientService = serviceProvider.GetRequiredService<IClientService>();
+            var clientService = serviceProvider.GetRequiredService<IClientServiceV2>();
             var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ConfigurationController>>();
             var logger = serviceProvider.GetRequiredService<ILogger<ConfigurationController>>();
             var tempDataDictionaryFactory = serviceProvider.GetRequiredService<ITempDataDictionaryFactory>();

@@ -13,6 +13,28 @@ using Skoruba.IdentityServer4.Admin.BusinessLogic.Resources;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 {
+    public class ClientServiceV2 : ClientService, IClientServiceV2
+    {
+        public ClientServiceV2(IClientRepository clientRepository, IClientServiceResources clientServiceResources) : base(clientRepository, clientServiceResources)
+        {
+        }
+
+        public Task<ClientClaimsDto> GetClientClaimAsync(int clientId, int clientClaimId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ClientPropertiesDto> GetClientPropertyAsync(int clientId, int clientPropertyId)
+        {
+            return await GetClientPropertyAsync(clientPropertyId);
+        }
+
+        public Task<ClientSecretsDto> GetClientSecretAsync(int clientId, int clientSecretId)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
@@ -365,6 +387,8 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 
             return clientPropertiesDto;
         }
+
+       
 
         public async Task<int> AddClientClaimAsync(ClientClaimsDto clientClaim)
         {

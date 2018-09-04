@@ -5,6 +5,13 @@ using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 {
+    public interface IClientServiceV2: IClientService
+    {
+        Task<ClientPropertiesDto> GetClientPropertyAsync(int clientId, int clientPropertyId);
+        Task<ClientSecretsDto> GetClientSecretAsync(int clientId, int clientSecretId);
+        Task<ClientClaimsDto> GetClientClaimAsync(int clientId, int clientClaimId);
+    }
+
     public interface IClientService
     {
         ClientDto BuildClientViewModel(ClientDto client = null);
