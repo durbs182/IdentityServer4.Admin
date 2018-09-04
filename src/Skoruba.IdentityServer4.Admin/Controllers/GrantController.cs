@@ -9,11 +9,10 @@ using Skoruba.IdentityServer4.Admin.ExceptionHandling;
 using Skoruba.IdentityServer4.Admin.Helpers;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Grant;
-using Microsoft.AspNetCore.Authentication;
 
 namespace Skoruba.IdentityServer4.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
     [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
     public class GrantController : BaseController
     {
@@ -31,10 +30,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> PersistedGrants(int? page, string search)
         {
-            string accessToken = await HttpContext.GetTokenAsync("access_token");
-            string idToken = await HttpContext.GetTokenAsync("id_token");
-            string refreshToken = await HttpContext.GetTokenAsync("refresh_token");
-
             ViewBag.Search = search;
             var persistedGrants = await _persistedGrantService.GetPersitedGrantsByUsers(search, page ?? 1);
 

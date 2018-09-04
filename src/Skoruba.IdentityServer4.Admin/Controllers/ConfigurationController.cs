@@ -3,26 +3,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using SF.Common;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Helpers;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services;
+using Skoruba.IdentityServer4.Admin.Constants;
 using Skoruba.IdentityServer4.Admin.ExceptionHandling;
 
 namespace Skoruba.IdentityServer4.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
     [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
     public class ConfigurationController : BaseController
     {
         private readonly IIdentityResourceService _identityResourceService;
         private readonly IApiResourceService _apiResourceService;
-        private readonly IClientServiceV2 _clientService;
+        private readonly IClientService _clientService;
         private readonly IStringLocalizer<ConfigurationController> _localizer;
 
         public ConfigurationController(IIdentityResourceService identityResourceService,
             IApiResourceService apiResourceService,
-            IClientServiceV2 clientService,
+            IClientService clientService,
             IStringLocalizer<ConfigurationController> localizer,
             ILogger<ConfigurationController> logger)
             : base(logger)
@@ -44,7 +44,7 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
                 return View(clientDto);
             }
 
-            var client = await _clientService.GetClientAsync(id);
+            var client = await _clientService.GetClientAsync((int)id);
             client = _clientService.BuildClientViewModel(client);
 
             return View(client);
@@ -59,7 +59,7 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             if (!ModelState.IsValid)
             {
                 return View(client);
-            } 
+            }
 
             //Add new client
             if (client.Id == 0)
@@ -168,30 +168,28 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
                 return View(clientClaim);
             }
 
-            if( (await _clientService.AddClientClaimAsync(clientClaim)) != -1)
-            {
-                SuccessNotification(string.Format(_localizer["SuccessAddClientClaim"], clientClaim.Value, clientClaim.ClientName), _localizer["SuccessTitle"]);
-            }
+            await _clientService.AddClientClaimAsync(clientClaim);
+            SuccessNotification(string.Format(_localizer["SuccessAddClientClaim"], clientClaim.Value, clientClaim.ClientName), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientClaims), new { Id = clientClaim.ClientId });
         }
 
         [HttpGet]
-        public async Task<IActionResult> ClientClaimDelete(int claimid, int clientid)
+        public async Task<IActionResult> ClientClaimDelete(int id)
         {
-            if (claimid == 0) return NotFound();
+            if (id == 0) return NotFound();
 
-            var clientClaim = await _clientService.GetClientClaimAsync(clientid, claimid);
+            var clientClaim = await _clientService.GetClientClaimAsync(id);
 
             return View(nameof(ClientClaimDelete), clientClaim);
         }
 
         [HttpGet]
-        public async Task<IActionResult> ClientPropertyDelete(int clientid, int propertyid)
+        public async Task<IActionResult> ClientPropertyDelete(int id)
         {
-            if (propertyid == 0) return NotFound();
+            if (id == 0) return NotFound();
 
-            var clientProperty = await _clientService.GetClientPropertyAsync(clientid, propertyid);
+            var clientProperty = await _clientService.GetClientPropertyAsync(id);
 
             return View(nameof(ClientPropertyDelete), clientProperty);
         }
@@ -237,11 +235,11 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ClientSecretDelete(int secretid, int clientid)
+        public async Task<IActionResult> ClientSecretDelete(int id)
         {
-            if (secretid == 0) return NotFound();
+            if (id == 0) return NotFound();
 
-            var clientSecret = await _clientService.GetClientSecretAsync(clientid, secretid);
+            var clientSecret = await _clientService.GetClientSecretAsync(id);
 
             return View(nameof(ClientSecretDelete), clientSecret);
         }
@@ -287,7 +285,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(await _clientService.GetClientsAsync(search, page ?? 1));
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> IdentityResourceDelete(int id)
         {
@@ -298,7 +295,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(identityResource);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IdentityResourceDelete(IdentityResourceDto identityResource)
@@ -309,7 +305,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(IdentityResources));
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IdentityResource(IdentityResourceDto identityResource)
@@ -329,7 +324,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(IdentityResources));
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiResource(ApiResourceDto apiResource)
@@ -349,7 +343,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(ApiResources));
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> ApiResourceDelete(int id)
         {
@@ -360,7 +353,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(apiResource);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiResourceDelete(ApiResourceDto apiResource)
@@ -371,7 +363,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(ApiResources));
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         [Route("[controller]/[action]")]
         [Route("[controller]/[action]/{id:int}")]
@@ -388,7 +379,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(apiResource);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> ApiSecrets(int id, int? page)
         {
@@ -400,7 +390,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(apiSecrets);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiSecrets(ApiSecretsDto apiSecret)
@@ -416,7 +405,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(ApiSecrets), new { Id = apiSecret.ApiResourceId });
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> ApiScopes(int id, int? page, int? scope)
         {
@@ -435,7 +423,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             }
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiScopes(ApiScopesDto apiScope)
@@ -455,7 +442,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(ApiScopes));
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> ApiScopeDelete(int id, int scope)
         {
@@ -466,7 +452,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(nameof(ApiScopeDelete), apiScope);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiScopeDelete(ApiScopesDto apiScope)
@@ -477,7 +462,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(ApiScopes), new { Id = apiScope.ApiResourceId });
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> ApiResources(int? page, string search)
         {
@@ -487,7 +471,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(apiResources);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> IdentityResources(int? page, string search)
         {
@@ -497,7 +480,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(identityResourcesDto);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         public async Task<IActionResult> ApiSecretDelete(int id)
         {
@@ -508,7 +490,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return View(nameof(ApiSecretDelete), clientSecret);
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApiSecretDelete(ApiSecretsDto apiSecret)
@@ -519,7 +500,6 @@ namespace Skoruba.IdentityServer4.Admin.Controllers
             return RedirectToAction(nameof(ApiSecrets), new { Id = apiSecret.ApiResourceId });
         }
 
-        [Authorize(Policy = AccessControlContext.AdministrationPolicy)]
         [HttpGet]
         [Route("[controller]/[action]")]
         [Route("[controller]/[action]/{id:int}")]
